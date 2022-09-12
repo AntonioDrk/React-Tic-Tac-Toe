@@ -1,6 +1,7 @@
 {
   "name": "my-first-react-try3",
   "version": "0.1.0",
+  "homepage": "https://antoniodrk.github.io/React-Tic-Tac-Toe",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
