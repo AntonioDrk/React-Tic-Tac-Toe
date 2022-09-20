@@ -1,10 +1,12 @@
-html, body {
+html,
+body {
   font: 14px "Century Gothic", Futura, sans-serif;
   margin: 20px;
   background-color: #52196b;
   margin: 0;
   height: 100%;
   min-height: 100%;
+  color: #fff;
 }
 
 ol,
@@ -13,57 +15,61 @@ ul {
   list-style: none;
 }
 
-li > button{
+li > button {
   font-size: x-large;
   color: #111;
   width: 200px;
-  background-color: #BD598C;
+  background-color: #bd598c;
   border: 1px solid #000;
   border-radius: 16px;
   padding: 5%;
   margin-top: 1%;
 }
 
-li > button:hover{
+li > button:hover {
   cursor: pointer;
 }
 
-a, a:visited, a:hover, a:focus{
+a,
+a:visited,
+a:hover,
+a:focus {
   color: inherit;
 }
-
 
 .bold {
   font-weight: bold;
 }
 
-.board-row:after {
+/* .board-row:after {
   clear: both;
   content: "";
   display: table;
-}
+} */
 
 .status {
   margin-bottom: 10px;
 }
 
-.winsquare {
+.winSquare {
   background: #84c68c !important;
 }
 
 .square {
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: nowrap; */
   background: #52196b;
   border: 2px solid #fff;
-  float: left;
-  font-size: 256px;
+  font-size: 5rem;
   font-weight: bolder;
-  line-height: 300px;
+  /* line-height: 300px; */
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  height: 300px;
-  width: 300px;
   color: #fff;
 }
 
@@ -75,35 +81,44 @@ a, a:visited, a:hover, a:focus{
   background: #ddd;
 }
 
+.square{
+  aspect-ratio: 1 / 1;
+}
+
+.board-row {
+  width: 100%;
+}
+
 .game {
-  margin-top: 10px;
+  /* margin-top: 10px;
   display: flex;
   color: #fff;
   flex-direction: row;
   justify-content: center;
   flex-wrap: nowrap;
+  flex-grow: 2; */
 }
 
-.author-info{
-  display: flex;
+.author-info {
+  /* display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   flex-grow: 1;
   padding-left: 15px;
-  width: 150px;
+  width: 150px; */
 }
 
-.author-info > footer{
+.author-info > footer {
   font-size: small;
   color: #aaa;
 }
 
 .game-info {
-  margin-left: 20px;
+  /* margin-left: 20px;
   font-size: 25px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  width: 300px;
+  width: 300px; */
 }

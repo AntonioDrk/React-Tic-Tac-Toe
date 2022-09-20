@@ -6,7 +6,7 @@ class Square extends React.Component {
   render() {
     return (
       <button
-        className={this.props.winState ? "square winsquare" : "square"}
+        className={`square col-4 ${this.props.winState}`}
         onClick={() => this.props.onClick()}>
         {this.props.value}
       </button>
@@ -38,7 +38,7 @@ class Board extends React.Component {
 
   renderSquare(i) {
     return (<Square
-      winState={this.props.gState.winState[i]}
+      winState={this.props.gState.winState[i] ? "winSquare" : " "}
       value={this.props.gState.squares[i]}
       onClick={() => this.props.onClick(i)}
     />
@@ -47,18 +47,18 @@ class Board extends React.Component {
 
   render() {
     return (
-      <div>
-        <div className="board-row">
+      <div className="container-fluid pt-3 mb-5">
+        <div className="board-row row g-0 align-items-center">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
           {this.renderSquare(2)}
         </div>
-        <div className="board-row">
+        <div className="board-row row g-0 align-items-center">
           {this.renderSquare(3)}
           {this.renderSquare(4)}
           {this.renderSquare(5)}
         </div>
-        <div className="board-row">
+        <div className="board-row row g-0 align-items-center">
           {this.renderSquare(6)}
           {this.renderSquare(7)}
           {this.renderSquare(8)}
@@ -79,7 +79,7 @@ class Game extends React.Component {
       historyIndex: 0,
     }
   }
-  
+
   // Checks if the future configuration is a winning one and returns an array of the winning squares if so
   // Otherwise returns null
   isWinning(gameState) {
@@ -140,11 +140,11 @@ class Game extends React.Component {
 
   // Jumps to a state in the past by slicing the history array and updating the index
   // Doesn't allow for jumps in future
-  jumpTo(index){
-    if(this.state.historyIndex === index) return;
+  jumpTo(index) {
+    if (this.state.historyIndex === index) return;
 
     const historySlice = this.state.history.slice(0, index + 1);
-    this.setState({history: historySlice, historyIndex: index});
+    this.setState({ history: historySlice, historyIndex: index });
   }
 
   // Handler for the clicks on the squares
@@ -153,7 +153,7 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    
+
     // Can't overwrite cells already written
     if (current.winner || current.squares[i]) return;
 
@@ -167,7 +167,7 @@ class Game extends React.Component {
     let winState = this.isWinning(nextState);
     if (winState) {
       nextState.status = 'WINNER IS ' + current.turn;
-      nextState.winState = winState;
+      nextState.winState = winState.slice();
       nextState.turn = current.turn;
       nextState.winner = current.turn;
     } else {
@@ -181,8 +181,8 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div className="game">
-        <div className="author-info">
+      <div className="game row">
+        <div className="author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2">
           <h2>
             React Tic Tac Toe
           </h2>
@@ -193,25 +193,25 @@ class Game extends React.Component {
           </p>
           <footer>Created by <a href="https://github.com/AntonioDrk">Antonio Druker</a></footer>
         </div>
-        <div className="game-board">
+        <div className="game-board col-12 col-md-6 order-1 order-md-2 d-flex justify-content-center">
           <Board
             gState={this.state.history[this.state.historyIndex]}
-            onClick={(i)=> this.handleClick(i)}
+            onClick={(i) => this.handleClick(i)}
           />
         </div>
-        <div className="game-info">
+        <div className="game-info pt-md-3 col-12 col-md-2 order-2 order-md-3">
           <div className={!this.state.history[this.state.historyIndex].winner ? "status" : "status bold"}>{this.state.history[this.state.historyIndex].status}</div>
           <div className="history">
             <p className="bold">History: </p>
             <ul>
-            {this.state.history.map(
-              (gameState, index) => {
-                return (
-                  index === this.state.history.length - 1 ? '' :
-                  <li key={index}>
-                    <button onClick={()=> this.jumpTo(index)}>{index !== 0 ? 'Go to move ' + index : 'Jump to start'}</button>
-                  </li>);
-              } )}
+              {this.state.history.map(
+                (gameState, index) => {
+                  return (
+                    index === this.state.history.length - 1 ? '' :
+                      <li key={index}>
+                        <button onClick={() => this.jumpTo(index)}>{index !== 0 ? 'Go to move ' + index : 'Jump to start'}</button>
+                      </li>);
+                })}
             </ul>
 
           </div>
@@ -225,7 +225,7 @@ class Game extends React.Component {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
- <StrictMode>
-  <Game />
- </StrictMode> 
+  <StrictMode>
+    <Game />
+  </StrictMode>
 );
