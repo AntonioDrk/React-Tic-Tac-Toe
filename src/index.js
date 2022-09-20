@@ -182,6 +182,7 @@ class Game extends React.Component {
   render() {
     return (
       <div className="game row">
+        <div className="col-md-1"></div>
         <div className="author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2">
           <h2>
             React Tic Tac Toe
