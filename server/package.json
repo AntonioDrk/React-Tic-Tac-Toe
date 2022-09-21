@@ -4,16 +4,19 @@
   "description": "Websocket server for a tic-tac-toe game",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
+  "type": "module",
   "author": "Antonio Druker",
   "license": "ISC",
   "dependencies": {
-    "socket.io": "^4.5.2"
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.5.2",
+    "uuid": "^9.0.0"
   },
-  "jshintConfig":{
+  "jshintConfig": {
     "esversion": 6,
     "maxdepth": 4
   }

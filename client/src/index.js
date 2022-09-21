@@ -1,7 +1,25 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import 'socket.io-client';
+import { io } from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
+
+const socket = io('localhost:80');
+const myId = uuidv4();
+socket.on('connect', () => {
+  console.log('Connected to websocket server!');
+  socket.emit('test-event', myId);
+});
+
+class SocketStatus extends React.Component {
+  render() {
+    return (
+      <div>
+        Socket : {this.props.socketConnected ? '🟩' : '🟥'}
+      </div>
+    )
+  }
+}
 
 class Square extends React.Component {
   render() {
@@ -229,5 +247,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
     <Game />
+    <SocketStatus socketConnected={socket.connected} />
   </StrictMode>
 );
