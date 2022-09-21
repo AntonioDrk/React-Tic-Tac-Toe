@@ -1,6 +1,7 @@
-import React, { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
+import React, { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
 import './index.css';
+import 'socket.io-client';
 
 class Square extends React.Component {
   render() {
@@ -38,7 +39,7 @@ class Board extends React.Component {
 
   renderSquare(i) {
     return (<Square
-      winState={this.props.gState.winState[i] ? "winSquare" : " "}
+      winState={this.props.gState.winState[i] ? 'winSquare' : ' '}
       value={this.props.gState.squares[i]}
       onClick={() => this.props.onClick(i)}
     />
@@ -47,18 +48,18 @@ class Board extends React.Component {
 
   render() {
     return (
-      <div className="container-fluid pt-3 mb-5">
-        <div className="board-row row g-0 align-items-center">
+      <div className='container-fluid pt-3 mb-5'>
+        <div className='board-row row g-0 align-items-center'>
           {this.renderSquare(0)}
           {this.renderSquare(1)}
           {this.renderSquare(2)}
         </div>
-        <div className="board-row row g-0 align-items-center">
+        <div className='board-row row g-0 align-items-center'>
           {this.renderSquare(3)}
           {this.renderSquare(4)}
           {this.renderSquare(5)}
         </div>
-        <div className="board-row row g-0 align-items-center">
+        <div className='board-row row g-0 align-items-center'>
           {this.renderSquare(6)}
           {this.renderSquare(7)}
           {this.renderSquare(8)}
@@ -181,29 +182,29 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div className="game row">
-        <div className="col-md-1"></div>
-        <div className="author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2">
+      <div className='game row'>
+        <div className='col-md-1'></div>
+        <div className='author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2'>
           <h2>
             React Tic Tac Toe
           </h2>
           <p>
             Page created in ReactJs for the intention of learning and getting started with this framework.
-            As such it is the first project I've apperhended with the help of the tutorial found <a href="https://reactjs.org/tutorial/tutorial.html">here</a> their website.
+            As such it is the first project I've apperhended with the help of the tutorial found <a href='https://reactjs.org/tutorial/tutorial.html'>here</a> their website.
 
           </p>
-          <footer>Created by <a href="https://github.com/AntonioDrk">Antonio Druker</a></footer>
+          <footer>Created by <a href='https://github.com/AntonioDrk'>Antonio Druker</a></footer>
         </div>
-        <div className="game-board col-12 col-md-6 order-1 order-md-2 d-flex justify-content-center">
+        <div className='game-board col-12 col-md-6 order-1 order-md-2 d-flex justify-content-center'>
           <Board
             gState={this.state.history[this.state.historyIndex]}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
-        <div className="game-info pt-md-3 col-12 col-md-2 order-2 order-md-3">
-          <div className={!this.state.history[this.state.historyIndex].winner ? "status" : "status bold"}>{this.state.history[this.state.historyIndex].status}</div>
-          <div className="history">
-            <p className="bold">History: </p>
+        <div className='game-info pt-md-3 col-12 col-md-2 order-2 order-md-3'>
+          <div className={!this.state.history[this.state.historyIndex].winner ? 'status' : 'status bold'}>{this.state.history[this.state.historyIndex].status}</div>
+          <div className='history'>
+            <p className='bold'>History: </p>
             <ul>
               {this.state.history.map(
                 (gameState, index) => {
@@ -224,7 +225,7 @@ class Game extends React.Component {
 
 // ========================================
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
     <Game />
