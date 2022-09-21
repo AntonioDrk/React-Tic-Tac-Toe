@@ -1,0 +1,20 @@
+{
+  "name": "websocket-server",
+  "version": "1.0.0",
+  "description": "Websocket server for a tic-tac-toe game",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Antonio Druker",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.5.2"
+  },
+  "jshintConfig":{
+    "esversion": 6,
+    "maxdepth": 4
+  }
+}
