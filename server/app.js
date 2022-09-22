@@ -12,8 +12,10 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket) => {
 	console.log('We got a socket conn');
-	socket.on('test-event', (id) => {
-		console.log('Received test event from ' + id + ' !');
+	// Bind the global events
+	socket.on('join', ([fromId, toId]) => {
+		console.log(`[${fromId}] joining [${toId}]`);
+		socket.join(toId);
 	});
 });
 

@@ -6,16 +6,46 @@ import { v4 as uuidv4 } from 'uuid';
 
 const socket = io('localhost:80');
 const myId = uuidv4();
-socket.on('connect', () => {
-  console.log('Connected to websocket server!');
-  socket.emit('test-event', myId);
-});
+socket.emit('join', [myId, myId]);
 
 class SocketStatus extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isConnected: false,
+      otherPlayerId: ''
+    };
+
+  }
+
+  onInputChanged(event){
+    this.setState({'otherPlayerId': event.target.value.trim()});
+  }
+
+  onJoinButtonClicked(){
+    socket.emit('join', [myId, this.state.otherPlayerId]);
+  }
+
+  componentDidMount() {
+
+    socket.on('connect', () => {
+      this.setState({ 'isConnected': true });
+    });
+
+    socket.on('disconnect', () => {
+      this.setState({ 'isConnected': false });
+    });
+  }
+
   render() {
     return (
       <div>
-        Socket : {this.props.socketConnected ? '🟩' : '🟥'}
+        <p>Your id: {myId} </p>
+        <p>Server : {this.state.isConnected ? '🟩' : '🟥'}</p>
+        <input type='text' placeholder='Partner id:' onChange={(event)=>{this.onInputChanged(event);}}/>
+        {this.state.isConnected ? (<button onClick={()=>this.onJoinButtonClicked()}>Join</button>) : ''}
       </div>
     )
   }
@@ -247,6 +277,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
     <Game />
-    <SocketStatus socketConnected={socket.connected} />
+    <SocketStatus />
   </StrictMode>
 );
