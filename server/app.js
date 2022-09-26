@@ -16,6 +16,12 @@ io.on('connection', (socket) => {
 	socket.on('join', ([fromId, toId]) => {
 		console.log(`[${fromId}] joining [${toId}]`);
 		socket.join(toId);
+		socket.to(toId).emit('playerJoined', { 'joinedId': fromId });
+	});
+
+	socket.on('state-change', ([roomId, newState]) => {
+		console.log('State-change event called with : ' + roomId + '\n' + newState);
+		socket.to(roomId).emit('stateChange', newState);
 	});
 });
 

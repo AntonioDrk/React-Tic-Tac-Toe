@@ -4,52 +4,8 @@ import './index.css';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-const socket = io('localhost:80');
-const myId = uuidv4();
-socket.emit('join', [myId, myId]);
-
-class SocketStatus extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isConnected: false,
-      otherPlayerId: ''
-    };
-
-  }
-
-  onInputChanged(event){
-    this.setState({'otherPlayerId': event.target.value.trim()});
-  }
-
-  onJoinButtonClicked(){
-    socket.emit('join', [myId, this.state.otherPlayerId]);
-  }
-
-  componentDidMount() {
-
-    socket.on('connect', () => {
-      this.setState({ 'isConnected': true });
-    });
-
-    socket.on('disconnect', () => {
-      this.setState({ 'isConnected': false });
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <p>Your id: {myId} </p>
-        <p>Server : {this.state.isConnected ? '🟩' : '🟥'}</p>
-        <input type='text' placeholder='Partner id:' onChange={(event)=>{this.onInputChanged(event);}}/>
-        {this.state.isConnected ? (<button onClick={()=>this.onJoinButtonClicked()}>Join</button>) : ''}
-      </div>
-    )
-  }
-}
+const socket = io('localhost:80');  // Connection to the IO server
+const myId = uuidv4();              // Generating my own ID
 
 class Square extends React.Component {
   render() {
@@ -126,6 +82,13 @@ class Game extends React.Component {
         new GameState()
       ],
       historyIndex: 0,
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.newState !== this.props.newState) {
+      const history = this.state.history;
+      this.setState({ history: history.concat([this.props.newState]), historyIndex: this.state.historyIndex + 1 });
     }
   }
 
@@ -226,6 +189,7 @@ class Game extends React.Component {
 
     // Update the history array with the nextState created
     this.setState({ history: history.concat([nextState]), historyIndex: this.state.historyIndex + 1 });
+    this.props.onNewState(nextState);
   }
 
   render() {
@@ -271,12 +235,76 @@ class Game extends React.Component {
   }
 }
 
+class MultiplayerGame extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isConnected: false,
+      otherPlayerId: myId,
+      nextGState: new GameState(),
+      connectedToRoom: false
+    };
+  }
+
+  onNewState(newState) {
+    socket.emit('state-change', [this.state.otherPlayerId, newState]);
+  }
+
+  onPlayerJoined({joinedId}) {
+    this.setState({'otherPlayerId': joinedId, 'connectedToRoom': true});
+  }
+
+  onStateChange(gState) {
+    this.setState({ 'nextGState': gState });
+  }
+
+  onInputChanged(event) {
+    this.setState({ 'otherPlayerId': event.target.value.trim() });
+  }
+
+  onJoinButtonClicked() {
+    socket.emit('join', [myId, this.state.otherPlayerId]);
+  }
+
+  componentDidMount() {
+
+    socket.on('connect', () => {
+      this.setState({ 'isConnected': true });
+    });
+
+    socket.on('disconnect', () => {
+      this.setState({ 'isConnected': false });
+    });
+
+    socket.on('playerJoined', (args) => this.onPlayerJoined(args));
+
+    socket.on('stateChange', (gState) => this.onStateChange(gState));
+
+    // Join room with your ID
+    this.onJoinButtonClicked();
+  }
+
+  render() {
+    return (
+      <div>
+        <p>Your id: {myId} </p>
+        <p>Server : {this.state.isConnected ? '🟩' : '🟥'}</p>
+        {this.state.connectedToRoom ? <p>Connected to {this.state.otherPlayerId} </p> : ''}
+        <input type='text' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
+        {this.state.isConnected ? (<button onClick={() => this.onJoinButtonClicked()}>Join</button>) : ''}
+        <Game onNewState={(newState) => this.onNewState(newState)} newState={this.state.nextGState} />
+      </div>
+    )
+  }
+}
+
 // ========================================
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
-    <Game />
-    <SocketStatus />
+    <MultiplayerGame />
   </StrictMode>
 );
