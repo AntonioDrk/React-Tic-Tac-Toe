@@ -4,7 +4,7 @@ import './index.css';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-const socket = io('localhost:80');  // Connection to the IO server
+const socket = io('https://tic-tac-toe-backend.up.railway.app:80');  // Connection to the IO server
 const myId = uuidv4();              // Generating my own ID
 
 class Square extends React.Component {
@@ -252,8 +252,8 @@ class MultiplayerGame extends React.Component {
     socket.emit('state-change', [this.state.otherPlayerId, newState]);
   }
 
-  onPlayerJoined({joinedId}) {
-    this.setState({'otherPlayerId': joinedId, 'connectedToRoom': true});
+  onPlayerJoined({ joinedId }) {
+    this.setState({ 'otherPlayerId': joinedId, 'connectedToRoom': true });
   }
 
   onStateChange(gState) {
