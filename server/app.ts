@@ -3,7 +3,7 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 
 const PORT = process.env.PORT || 80;
-var SocketData:{String: any};
+var SocketData = new Map<String, {'socketInstance':any, 'piece':String}>();
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -12,8 +12,6 @@ const io = new Server(httpServer, {
   }
 });
 
-
-
 function randomInt(min:number, max:number):number {
   return Math.floor(Math.random() * max + min);
 }
@@ -21,24 +19,23 @@ function randomInt(min:number, max:number):number {
 io.on('connection', (socket:any) => {
   console.log('We got a socket conn');
   // Bind the global events
-  socket.on('join', ([fromId, toId]:[any,any]) => {
+  socket.on('join', ([fromId, toId]:[String,String]) => {
     console.log(`[${fromId}] joining [${toId}]`);
 
     socket.join(toId);
     socket.to(toId).emit('playerJoined', { 'joinedId': fromId });
 
     if (fromId === toId){
-      SocketData[fromId as keyof {String: any}] = {
-        'id': fromId,
-        'socketInstance': socket
-      };
+      SocketData.set(fromId, {'socketInstance': socket, 'piece': undefined});
     }
 
     let randomPiece = randomInt(0, 1);
-    SocketData[fromId  as keyof {String: any}].piece = randomPiece === 0 ? 'X' : 'O';
-    SocketData[toId  as keyof {String: any}].piece = randomPiece === 1 ? 'O' : 'X';
+    SocketData.set(fromId, {'piece': randomPiece === 0 ? 'X' : 'O', socketInstance: SocketData.get(fromId).socketInstance});
+    SocketData.set(toId, {'piece': randomPiece === 1 ? 'X' : 'O', socketInstance: SocketData.get(toId).socketInstance});
 
-    SocketData[fromId  as keyof {String: any}].socket
+    // Send the data to the sockets with what piece they start and that the game is starting
+    SocketData.get(fromId).socketInstance.emit('start-game', SocketData.get(fromId).piece);
+    SocketData.get(toId).socketInstance.emit('start-game', SocketData.get(toId).piece);
   });
 
   socket.on('state-change', ([roomId, newState]: [String, String]) => {
@@ -47,7 +44,7 @@ io.on('connection', (socket:any) => {
   });
 
   socket.on('disconnect', () => {
-
+    SocketData.keys();
   });
 });
 
