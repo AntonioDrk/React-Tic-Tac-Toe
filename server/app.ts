@@ -44,8 +44,21 @@ io.on('connection', (socket:any) => {
   });
 
   socket.on('disconnect', () => {
-    SocketData.keys();
+    const sockUUID = findSocketUUIDAfterId(socket.id);
+    if(SocketData.has(sockUUID)){
+      SocketData.delete(sockUUID);
+    }
   });
 });
+
+function findSocketUUIDAfterId(socketId:any):String{
+  let foundSocketUUID = null;
+  SocketData.forEach((val, key) => {
+    if(val.socketInstance.id === socketId){
+      foundSocketUUID = key;
+    }
+  });
+  return foundSocketUUID;
+}
 
 httpServer.listen(PORT, () => { console.log('Server online on port ' + PORT); });
