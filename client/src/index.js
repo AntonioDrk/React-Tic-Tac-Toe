@@ -4,7 +4,7 @@ import './index.css';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-const socket = io('https://tic-tac-toe-backend.up.railway.app');  // Connection to the IO server
+const socket = io('localhost:3001');  // Connection to the IO server
 const myId = uuidv4();              // Generating my own ID
 
 class Square extends React.Component {
@@ -159,15 +159,19 @@ class Game extends React.Component {
 
     const historySlice = this.state.history.slice(0, index + 1);
     this.setState({ history: historySlice, historyIndex: index });
-    this.props.onNewHistoryIndex(historyIndex); // Send the new history index to the other player
+    this.props.onNewHistoryIndex(index); // Send the new history index to the other player
   }
 
   // Handler for the clicks on the squares
   handleClick(i) {
+
+
     // Copy the squares array
     const history = this.state.history;
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+
+    if (this.props.piece !== current.turn) return;
 
     // Can't overwrite cells already written
     if (current.winner || current.squares[i]) return;
@@ -245,9 +249,11 @@ class MultiplayerGame extends React.Component {
 
     this.state = {
       isConnected: false,
-      otherPlayerId: myId,
+      inputedRoomId: myId,
       nextGState: new GameState(),
-      nextHistoryIndex: 0,
+      nextHistoryIndex: -1,
+      joinedRoomId: '',
+      piece: '',
       connectedToRoom: false
     };
   }
@@ -261,23 +267,34 @@ class MultiplayerGame extends React.Component {
   }
 
   onPlayerJoined({ joinedId }) {
-    this.setState({ 'otherPlayerId': joinedId, 'connectedToRoom': true });
+    this.setState({ 'joinedRoomId': joinedId, 'connectedToRoom': true });
   }
 
   onStateChange([gState, newHistoryIndex]) {
 
-    this.setState({
-      'nextGState': gState ? gState : this.state.nextGState,
-      'nextHistoryIndex': newHistoryIndex ? newHistoryIndex : this.state.nextHistoryIndex
-    });
+    console.log(`Received new state with \ngameState=${gState}\nnewHistoryIndex=${newHistoryIndex}`);
+
+    if (gState) {
+      this.setState({ 'nextGState': gState, 'nextHistoryIndex': -1 });
+      return;
+    }
+
+    if (newHistoryIndex !== null) {
+      this.setState({ 'nextHistoryIndex': newHistoryIndex });
+      return;
+    }
+  }
+
+  onStartGame(piece) {
+    this.setState({ 'piece': piece });
   }
 
   onInputChanged(event) {
-    this.setState({ 'otherPlayerId': event.target.value.trim() });
+    this.setState({ 'inputedRoomId': event.target.value.trim() });
   }
 
   onJoinButtonClicked() {
-    socket.emit('join', [myId, this.state.otherPlayerId]);
+    socket.emit('join', [myId, this.state.inputedRoomId]);
   }
 
   componentDidMount() {
@@ -294,6 +311,8 @@ class MultiplayerGame extends React.Component {
 
     socket.on('stateChange', (args) => this.onStateChange(args));
 
+    socket.on('start-game', (args) => this.onStartGame(args));
+
     // Join room with your ID
     this.onJoinButtonClicked();
   }
@@ -303,10 +322,11 @@ class MultiplayerGame extends React.Component {
       <div>
         <p>Your id: {myId} </p>
         <p>Server : {this.state.isConnected ? '🟩' : '🟥'}</p>
-        {this.state.connectedToRoom ? <p>Connected to {this.state.otherPlayerId} </p> : ''}
+        {this.state.connectedToRoom ? <p>Connected to {this.state.joinedRoomId} </p> : ''}
         <input type='text' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
         {this.state.isConnected ? (<button onClick={() => this.onJoinButtonClicked()}>Join</button>) : ''}
         <Game
+          piece={this.state.piece}
           onNewState={(newState) => this.onNewState(newState)}
           newState={this.state.nextGState}
           onNewHistoryIndex={(newHistoryIndex) => this.onNewHistoryIndex(newHistoryIndex)}
