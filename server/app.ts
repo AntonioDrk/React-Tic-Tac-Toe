@@ -21,7 +21,7 @@ io.on('connection', (socket:Socket) => {
   // Bind the global events
   socket.on('join', (args:[string,string])=>{onClientJoin(socket, args);});
 
-  socket.on('state-change', (newState:any) => {onGameStateChange(socket, newState);});
+  socket.on('state-change', (args) => {onGameStateChange(socket, args);});
 
   socket.on('disconnect', ()=>onDisconnect(socket));
 });
@@ -31,10 +31,10 @@ io.on('connection', (socket:Socket) => {
  * @param socket The socket object
  * @param newState The new State Object 
  */
-function onGameStateChange(socket:Socket, newState:any):void{
+function onGameStateChange(socket:Socket, [newState, newHistoryIndex]:[any,number]):void{
   // console.log('State-change event called with : ' + roomId + '\n' + newState);
   const roomId = SocketData.get(findSocketUUIDAfterId(socket.id)).joinedRoom;
-  socket.to(roomId).emit('stateChange', newState);
+  socket.to(roomId).emit('stateChange', [newState, newHistoryIndex]);
 }
 
 /**
