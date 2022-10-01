@@ -1,6 +1,6 @@
 //@ts-node
 import { createServer } from 'http';
-import { Server, type Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 const PORT = process.env.PORT || 3001;
 var SocketData = new Map<String, {'socketInstance':Socket, 'piece':String, 'joinedRoom': string}>();
@@ -21,6 +21,19 @@ const io = new Server(httpServer, {
 function randomInt(min:number, max:number):number {
   return Math.floor(Math.random() * max + min);
 }
+
+setInterval(()=>{
+  let log = '[\n';
+  let count = 0;
+  SocketData.forEach((value, key)=>{
+    log += key + ',\n';
+    count += 1;
+  });
+  log += ']';
+  let now = new Date();
+  console.log(`[${now.toLocaleDateString()}][${now.toLocaleTimeString()}] ${count} connected clients:`);
+  console.log(log);
+}, 5000);
 
 io.on('connection', (socket:Socket) => {
   console.log(socket.id + ' connected to the backend server');
@@ -61,12 +74,13 @@ function onDisconnect(socket:Socket):void{
  * @param args The uuid of the socket ininitating the join request and  of the socket that will be joined
  */
 function onClientJoin(socket:Socket, [fromId, toId]:[string,string]):void{
+  if(!SocketData.has(toId) && fromId !== toId) return;
+
   console.log(`[${fromId}] joining [${toId}]`);
 
   socket.join(toId);
   io.to(toId).emit('playerJoined', { 'joinedId': toId }); // Sends the room the players are in
   
-
   // Usually called when the player first connects to the server
   if (fromId === toId){
     SocketData.set(fromId, {
@@ -76,7 +90,7 @@ function onClientJoin(socket:Socket, [fromId, toId]:[string,string]):void{
     });
     return;
   }
-
+  
   let randomPiece = randomInt(0, 2);
   SocketData.set(fromId, {
     'piece': randomPiece === 0 ? 'X' : 'O', 
