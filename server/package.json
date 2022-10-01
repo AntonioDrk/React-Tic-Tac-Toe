@@ -4,6 +4,7 @@
   "description": "Websocket server for a tic-tac-toe game",
   "main": "app.js",
   "scripts": {
+    "dev-start": "nodemon app.ts",
     "start": "npx ts-node app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
