@@ -2,7 +2,7 @@
 import { createServer } from 'http';
 import { Server, type Socket } from 'socket.io';
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3001;
 var SocketData = new Map<String, {'socketInstance':Socket, 'piece':String, 'joinedRoom': string}>();
 
 const httpServer = createServer();
@@ -12,6 +12,12 @@ const io = new Server(httpServer, {
   }
 });
 
+/**
+ * 
+ * @param min INCLUSIVE
+ * @param max EXCLUSIVE
+ * @returns 
+ */
 function randomInt(min:number, max:number):number {
   return Math.floor(Math.random() * max + min);
 }
@@ -32,8 +38,8 @@ io.on('connection', (socket:Socket) => {
  * @param newState The new State Object 
  */
 function onGameStateChange(socket:Socket, [newState, newHistoryIndex]:[any,number]):void{
-  // console.log('State-change event called with : ' + roomId + '\n' + newState);
   const roomId = SocketData.get(findSocketUUIDAfterId(socket.id)).joinedRoom;
+  //console.log('State-change event called with : ' + roomId + '\nnewState=' + newState + '\nnewHistoryIndex=' + newHistoryIndex);
   socket.to(roomId).emit('stateChange', [newState, newHistoryIndex]);
 }
 
@@ -58,22 +64,24 @@ function onClientJoin(socket:Socket, [fromId, toId]:[string,string]):void{
   console.log(`[${fromId}] joining [${toId}]`);
 
   socket.join(toId);
-  socket.to(toId).emit('playerJoined', { 'joinedId': fromId });
+  io.to(toId).emit('playerJoined', { 'joinedId': toId }); // Sends the room the players are in
+  
 
   // Usually called when the player first connects to the server
   if (fromId === toId){
     SocketData.set(fromId, {
       'socketInstance': socket, 
-      'piece': undefined, 
+      'piece': '', 
       'joinedRoom': fromId
     });
+    return;
   }
 
-  let randomPiece = randomInt(0, 1);
+  let randomPiece = randomInt(0, 2);
   SocketData.set(fromId, {
     'piece': randomPiece === 0 ? 'X' : 'O', 
     'socketInstance': SocketData.get(fromId).socketInstance, 
-    'joinedRoom': SocketData.get(fromId).joinedRoom
+    'joinedRoom': toId
   });
   SocketData.set(toId, {
     'piece': randomPiece === 1 ? 'X' : 'O', 
