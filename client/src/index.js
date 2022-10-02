@@ -4,7 +4,7 @@ import './index.css';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-const socket = io('localhost:3001');  // Connection to the IO server
+const socket = io('tic-tac-toe-backend.up.railway.app');  // Connection to the IO server
 const myId = uuidv4();              // Generating my own ID
 
 class Square extends React.Component {
