@@ -203,40 +203,42 @@ class Game extends React.Component {
 
   render() {
     return (
-      <div className='game row'>
-        <div className='col-md-1'></div>
-        <div className='author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2'>
-          <h2>
-            React Tic Tac Toe
-          </h2>
-          <p>
-            Page created in ReactJs for the intention of learning and getting started with this framework.
-            As such it is the first project I've apperhended with the help of the tutorial found <a href='https://reactjs.org/tutorial/tutorial.html'>here</a> their website.
+      <div className='container-fluid'>
+        <div className='game row'>
+          <div className='col-md-1'></div>
+          <div className='author-info pt-md-3 col-12 col-md-2 order-3 order-md-1 col-xs-2'>
+            <h2>
+              React Tic Tac Toe
+            </h2>
+            <p>
+              Page created in ReactJs for the intention of learning and getting started with this framework.
+              As such it is the first project I've apperhended with the help of the tutorial found <a href='https://reactjs.org/tutorial/tutorial.html'>here</a> their website.
 
-          </p>
-          <footer>Created by <a href='https://github.com/AntonioDrk'>Antonio Druker</a></footer>
-        </div>
-        <div className='game-board col-12 col-md-6 order-1 order-md-2 d-flex justify-content-center'>
-          <Board
-            gState={this.state.history[this.state.historyIndex]}
-            onClick={(i) => this.handleClick(i)}
-          />
-        </div>
-        <div className='game-info pt-md-3 col-12 col-md-2 order-2 order-md-3'>
-          <div className={!this.state.history[this.state.historyIndex].winner ? 'status' : 'status bold'}>{this.state.history[this.state.historyIndex].status}</div>
-          <div className='history'>
-            <p className='bold'>History: </p>
-            <ul>
-              {this.state.history.map(
-                (gameState, index) => {
-                  return (
-                    index === this.state.history.length - 1 ? '' :
-                      <li key={index}>
-                        <button onClick={() => this.jumpTo(index)}>{index !== 0 ? 'Go to move ' + index : 'Jump to start'}</button>
-                      </li>);
-                })}
-            </ul>
+            </p>
+            <footer>Created by <a href='https://github.com/AntonioDrk'>Antonio Druker</a></footer>
+          </div>
+          <div className='game-board col-12 col-md-6 order-1 order-md-2 d-flex justify-content-center'>
+            <Board
+              gState={this.state.history[this.state.historyIndex]}
+              onClick={(i) => this.handleClick(i)}
+            />
+          </div>
+          <div className='game-info pt-md-3 col-12 col-md-2 order-2 order-md-3'>
+            <div className={!this.state.history[this.state.historyIndex].winner ? 'status' : 'status bold'}>{this.state.history[this.state.historyIndex].status}</div>
+            <div className='history'>
+              <p className='bold'>History: </p>
+              <ul>
+                {this.state.history.map(
+                  (gameState, index) => {
+                    return (
+                      index === this.state.history.length - 1 ? '' :
+                        <li key={index}>
+                          <button onClick={() => this.jumpTo(index)}>{index !== 0 ? 'Go to move ' + index : 'Jump to start'}</button>
+                        </li>);
+                  })}
+              </ul>
 
+            </div>
           </div>
         </div>
       </div>
@@ -320,6 +322,24 @@ class MultiplayerGame extends React.Component {
   }
 
   render() {
+    
+    let formGroup;
+
+    if(this.state.isConnected){
+      formGroup = (
+        <div className="col-8 input-group">
+          <input type='text' aria-describedby='connection-form' className='form-control' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
+          <button className='btn btn-outline-secondary' id='connection-form' type='button'  onClick={() => this.onJoinButtonClicked()}>Join</button>
+        </div>
+      );
+    }else{
+      formGroup = (
+        <div className="col-8 input-group">
+          <input type='text' aria-describedby='connection-form' className='form-control' placeholder='Partner id:' disabled/>
+        </div>
+      );
+    }
+
     return (
       <div>
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -340,17 +360,7 @@ class MultiplayerGame extends React.Component {
                 </li>
                 <li className="nav-item">
                   <div className="row justify-content-center aling-items-center">
-                    <div className="col-8 input-group">
-                      <input type='text' aria-describedby='connection-form' className='form-control' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
-                      {this.state.isConnected ? (<button className='btn btn-outline-secondary' id='connection-form' type='button'  onClick={() => this.onJoinButtonClicked()}>Join</button>) : ''}
-                    </div>
-                  </div>
-                </li>
-                <li className="nav-item">
-                  <div className="row justify-content-end">
-                    <div className="col-6">
-                      <div className='active text-nowrap'> Id: <span className='bold'>{myId}</span> </div>
-                    </div>
+                    {formGroup}
                   </div>
                 </li>
                 {/* <li className="nav-item dropdown">
@@ -362,6 +372,11 @@ class MultiplayerGame extends React.Component {
                   </ul>
                 </li> */}
               </ul>
+            </div>
+            <div className="row">
+              <div className="col-4">
+                <div className='active text-nowrap'> Id: <span className='bold px-2'>{myId}</span> </div>
+              </div>
             </div>
           </div>
         </nav>
