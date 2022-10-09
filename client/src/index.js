@@ -13,7 +13,7 @@ class Square extends React.Component {
   render() {
     return (
       <button
-        className={`square col-4 ${this.props.winState}`}
+        className={`square col-4 ${this.props.winState} ${this.props.value ? 'resizable' : ''}`}
         onClick={() => this.props.onClick()}>
         {this.props.value}
       </button>

@@ -130,3 +130,15 @@ a:focus {
   flex-grow: 1;
   width: 300px; */
 }
+
+.resizable{
+  animation: resize;
+  animation-duration: 0.25s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+}
+
+@keyframes resize{
+  from  {font-size: 0.25rem;}
+  to    {font-size: 5rem;} 
+}
