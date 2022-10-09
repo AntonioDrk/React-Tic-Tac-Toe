@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
+import statusOnImg from './assets/images/statusOn.svg';
+import statusOffImg from './assets/images/statusOff.svg';
 
-const socket = io('tic-tac-toe-backend.up.railway.app');  // Connection to the IO server
+const socket = io(process.env.NODE_ENV === 'development' ? 'localhost:3001' : 'tic-tac-toe-backend.up.railway.app');  // Connection to the IO server
 const myId = uuidv4();              // Generating my own ID
 
 class Square extends React.Component {
@@ -320,11 +322,52 @@ class MultiplayerGame extends React.Component {
   render() {
     return (
       <div>
-        <p>Your id: {myId} </p>
-        <p>Server : {this.state.isConnected ? '🟩' : '🟥'}</p>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div className="container-fluid">
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample08" aria-controls="navbarsExample08" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon"></span>
+            </button>
+
+            <div className="collapse navbar-collapse justify-content-md-center" id="navbarsExample08">
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                    <div className="row justify-content-end align-items-center">
+                      <div className='col-6'>Server</div>
+                      <div className="col-6">
+                        <img width='16px' height='16px' src={this.state.isConnected ? statusOnImg : statusOffImg} alt="Status Icon" /> 
+                      </div>
+                    </div>
+                </li>
+                <li className="nav-item">
+                  <div className="row justify-content-center aling-items-center">
+                    <div className="col-8 input-group">
+                      <input type='text' aria-describedby='connection-form' className='form-control' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
+                      {this.state.isConnected ? (<button className='btn btn-outline-secondary' id='connection-form' type='button'  onClick={() => this.onJoinButtonClicked()}>Join</button>) : ''}
+                    </div>
+                  </div>
+                </li>
+                <li className="nav-item">
+                  <div className="row justify-content-end">
+                    <div className="col-6">
+                      <div className='active text-nowrap'> Id: <span className='bold'>{myId}</span> </div>
+                    </div>
+                  </div>
+                </li>
+                {/* <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
+                  <ul className="dropdown-menu">
+                    <li><a className="dropdown-item" href="#">Action</a></li>
+                    <li><a className="dropdown-item" href="#">Another action</a></li>
+                    <li><a className="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </li> */}
+              </ul>
+            </div>
+          </div>
+        </nav>
+        
+
         {this.state.connectedToRoom ? <p>Connected to {this.state.joinedRoomId} </p> : ''}
-        <input type='text' placeholder='Partner id:' onChange={(event) => { this.onInputChanged(event); }} />
-        {this.state.isConnected ? (<button onClick={() => this.onJoinButtonClicked()}>Join</button>) : ''}
         <Game
           piece={this.state.piece}
           onNewState={(newState) => this.onNewState(newState)}

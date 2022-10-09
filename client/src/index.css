@@ -85,7 +85,11 @@ a:focus {
   background: #ddd;
 }
 
-.square{
+.serverStatus {
+  width: auto;
+}
+
+.square {
   aspect-ratio: 1 / 1;
 }
 
