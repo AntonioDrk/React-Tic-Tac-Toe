@@ -8,7 +8,7 @@ var SocketData = new Map<String, {'socketInstance':Socket, 'piece':String, 'join
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    origin: '*'
+    origin: process.env.RAILWAY_ENVIRONMENT ? 'https://antoniodrk.github.io/React-Tic-Tac-Toe/' : 'http://localhost:3000'
   }
 });
 
